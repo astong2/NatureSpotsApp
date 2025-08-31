@@ -1,0 +1,174 @@
+body { font-family: system-ui, Arial, sans-serif; line-height: 1.5; max-width: 900px; margin: 20px; }
+nav a { margin-right: 12px; }
+.spot-card { padding: 10px; border: 1px solid #00a352; border-radius: 8px; margin: 14px 0; background: #f9fff9 }
+img { display: block; margin: 8px 0; max-width: 100%; height: auto; }
+.flash-messages { list-style: disc; color: #0a6; }
+
+/* Profile page styling */
+.profile-card {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+  background: #f9f9f9;
+}
+
+.profile-card h2 {
+  margin-top: 0;
+}
+
+.profile-section {
+  margin-top: 25px;
+}
+
+.profile-section h3 {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+/* General button */
+.btn {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.1s ease-in-out;
+}
+
+/* Save button (green) */
+.btn-save {
+  background: #e6f9e6;
+  border: 1px solid #2e8b57;
+  color: #2e8b57;
+}
+.btn-save:hover {
+  background: #2e8b57;
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Delete button (red) */
+.btn-delete {
+  background: #ffecec;
+  border: 1px solid #c33;
+  color: #a00;
+}
+.btn-delete:hover {
+  background: #c33;
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Edit button (neutral/blue) */
+.btn-edit {
+  background: #e7f0ff;
+  border: 1px solid #357edd;
+  color: #357edd;
+}
+.btn-edit:hover {
+  background: #357edd;
+  color: white;
+  transform: translateY(-2px);
+}
+
+
+/* Edit form */
+.edit-form {
+  padding: 15px;
+  border: 1px solid #2e8b57;
+  border-radius: 8px;
+  background: #f9fff9;
+  margin-top: 15px;
+}
+.edit-form label {
+  font-weight: bold;
+}
+.edit-form input, 
+.edit-form textarea {
+  width: 100%;
+  max-width: 500px;
+  padding: 6px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.edit-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.search-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 16px;
+}
+.search-bar input[type="text"],
+.search-bar select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+/* Inspiration page */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+  margin: 14px 0 24px;
+}
+.gallery-item {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+.gallery-item img {
+  display: block;
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.quote-wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+.quote-card {
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: #f8fff8;
+  color: #2a4932;
+  font-style: italic;
+}
+
+/* Top nav */
+.topnav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; border: 1px solid #2e8b57; border-radius: 12px; background: #f9fff9;
+  margin-bottom: 14px;
+}
+.topnav .brand a { font-weight: 800; text-decoration: none; color: #234; }
+.topnav .links a {
+  margin-left: 10px; padding: 6px 10px; border-radius: 8px; text-decoration: none; color: #234;
+}
+.topnav .links a.active { background: #e6f9e6; border: 1px solid #2e8b57; color: #2e8b57; }
+
+/* Footer spacing */
+footer { margin-top: 24px; color: #000000; 
+}
+
+
+/* Flash messages */
+.flashes { margin: 10px 0; }
+.flash {
+  padding: 10px 12px; border: 1px solid #ddd; border-radius: 10px; margin-bottom: 8px;
+  background: #f6f6f6;
+}
+.flash.success { border-color: #2e8b57; background: #e6f9e6; color: #2e8b57; }
+.flash.error { border-color: #c33; background: #ffecec; color: #a00; 
+}

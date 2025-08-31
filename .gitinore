@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual env
+venv/
+
+# Local DB & instance
+nature_spots.db
+instance/
+*.sqlite3
+
+# Env/keys
+.env
+
+# VS Code
+.vscode/

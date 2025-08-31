@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+{% block title %}Edit {{ spot.title }} | NatureSpots{% endblock %}
+
+{% block content %}
+<h2>Edit Spot</h2>
+
+<form method="POST" class="edit-form">
+  <label>Title:</label><br>
+  <input type="text" name="title" value="{{ spot.title }}" required><br><br>
+
+  <label>Description:</label><br>
+  <textarea name="description" required>{{ spot.description }}</textarea><br><br>
+
+  <label>Location (name or area):</label><br>
+  <input type="text" name="location" value="{{ spot.location }}" required><br><br>
+
+  <label>Tags (comma-separated):</label><br>
+  <input type="text" name="tags" value="{{ spot.tags }}"><br><br>
+
+  <label>Image URL (optional):</label><br>
+  <input type="url" name="image_url" value="{{ spot.image_url or '' }}"><br><br>
+
+  <button type="submit" class="btn btn-save">Save changes</button>
+  <a href="{{ url_for('profile', username=session.get('username')) }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

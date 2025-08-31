@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+{% block title %}Inspiration | NatureSpots{% endblock %}
+
+{% block content %}
+<h2>Inspiration</h2>
+<p>Take a breath. Touch the ground. Let these images and words reset your nervous system.</p>
+
+<div class="gallery">
+  {% for img in images %}
+    <figure class="gallery-item">
+      <img src="{{ img }}" alt="Nature image">
+    </figure>
+  {% endfor %}
+</div>
+
+<div class="quote-wall">
+  {% for q in quotes %}
+    <div class="quote-card">{{ q }}</div>
+  {% endfor %}
+</div>
+{% endblock %}

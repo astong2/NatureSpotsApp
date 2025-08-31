@@ -1,0 +1,6 @@
+{% extends 'layout.html' %}
+{% block title %}Forbidden | NatureSpots{% endblock %}
+{% block content %}
+  <h2>Access denied</h2>
+  <p>You don’t have permission to view this. <a href="{{ url_for('home') }}">Go Home</a>.</p>
+{% endblock %}

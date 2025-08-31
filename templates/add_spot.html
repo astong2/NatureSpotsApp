@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+
+{% block title %}Add Spot | NatureSpots{% endblock %}
+
+{% block content %}
+<h2>Add a New Nature Spot</h2>
+<form method="POST">
+    <label>Title:</label><br>
+    <input type="text" name="title" required><br><br>
+
+    <label>Description:</label><br>
+    <textarea name="description" required></textarea><br><br>
+
+    <label>Location (name or area):</label><br>
+    <input type="text" name="location" required><br><br>
+
+    <label>Tags (comma-separated):</label><br>
+    <input type="text" name="tags"><br><br>
+
+    <label>Image URL (optional):</label><br>
+    <input type="url" name="image_url"><br><br>
+
+    <button type="submit">Submit</button>
+</form>
+{% endblock %}

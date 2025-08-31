@@ -1,0 +1,70 @@
+{% extends 'layout.html' %}
+{% block title %}NatureSpots | Home{% endblock %}
+
+{% block content %}
+
+<form method="GET" action="{{ url_for('home') }}" class="search-bar">
+  <input type="text" name="q" placeholder="Search by keyword…" value="{{ q or '' }}">
+  <select name="tag">
+    <option value="">All tags</option>
+    {% for t in all_tags %}
+      <option value="{{ t }}" {% if tag == t %}selected{% endif %}>{{ t }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn btn-edit">Search</button>
+
+  {% if q or tag %}
+    <a href="{{ url_for('home') }}" class="btn btn-secondary">Clear</a>
+  {% endif %}
+</form>
+
+{% if q or tag %}
+  <p style="margin:8px 0;">
+    <em>Filters:</em>
+    {% if q %} “{{ q }}” {% endif %}
+    {% if tag %} • tag: <strong>{{ tag }}</strong> {% endif %}
+  </p>
+{% endif %}
+
+<h2>Latest Nature Spots</h2>
+
+{% if spots %}
+  {% for spot in spots %}
+    <div class="spot-card">
+      <h3><a href="{{ url_for('spot_detail', spot_id=spot.id) }}">{{ spot.title }}</a></h3>
+      <p><strong>Location:</strong> {{ spot.location }}</p>
+      <p><strong>Description:</strong> {{ spot.description }}</p>
+      <p><strong>Tags:</strong> {{ spot.tags }}</p>
+
+      {% if spot.image_url %}
+        <img src="{{ spot.image_url }}" alt="Image of {{ spot.title }}" width="300">
+      {% endif %}
+
+      <p><em>Added by {{ spot.creator.username }}</em></p>
+
+      <p>
+        {% if session.get('user_id') %}
+          <form action="{{ url_for('toggle_save', spot_id=spot.id) }}" method="POST" class="inline">
+            <button type="submit" class="btn btn-save">
+              {% if spot.id in saved_ids %}Unsave{% else %}Save{% endif %}
+            </button>
+          </form>
+        {% endif %}
+      </p>
+
+      {% if session.get('user_id') == spot.user_id %}
+        <p>
+          <a href="{{ url_for('edit_spot', spot_id=spot.id) }}" class="btn btn-edit">Edit</a>
+          &nbsp;
+          <form action="{{ url_for('delete_spot', spot_id=spot.id) }}" method="POST" class="inline" onsubmit="return confirm('Delete this spot?');">
+            <button type="submit" class="btn btn-delete">Delete</button>
+          </form>
+        </p>
+      {% endif %}
+    </div>
+    <hr>
+  {% endfor %}
+{% else %}
+  <p>No nature spots added yet. Be the first!</p>
+{% endif %}
+{% endblock %}

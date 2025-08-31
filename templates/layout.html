@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}NatureSpots{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+<header>
+  <nav class="topnav">
+    <div class="brand">
+      <a href="{{ url_for('home') }}">🌿 NatureSpots</a>
+    </div>
+    <div class="links">
+      <a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a>
+      <a href="{{ url_for('add_spot') }}" class="{% if request.endpoint == 'add_spot' %}active{% endif %}">Add Spot</a>
+      <a href="{{ url_for('inspiration') }}" class="{% if request.endpoint == 'inspiration' %}active{% endif %}">Inspiration</a>
+
+      {% if session.get('user_id') %}
+        <a href="{{ url_for('profile', username=session.get('username')) }}" class="{% if request.endpoint in ['profile','my_profile'] %}active{% endif %}">Profile</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="{% if request.endpoint == 'login' %}active{% endif %}">Login</a>
+        <a href="{{ url_for('register') }}" class="{% if request.endpoint == 'register' %}active{% endif %}">Register</a>
+      {% endif %}
+    </div>
+  </nav>
+</header>
+
+
+  <main>
+     {% with messages = get_flashed_messages(with_categories=true) %}
+       {% if messages %}
+         <div class="flashes">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+           </div>
+        {% endif %}
+      {% endwith %}
+     {% block content %}{% endblock %}
+   </main>
+
+    <footer>
+        <p>NatureSpots 🌿 — Find your peace</p>
+    </footer>
+</body>
+</html>
