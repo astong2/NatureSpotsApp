@@ -31,7 +31,7 @@ Discover and save peaceful nature spots near you.
 ![Login](screenshots/Login.png) ![Register](screenshots/register.png)  
 
 #### Home  
-![Home](screenshots/home1.png) ![Home](screenshots/home2.png)  
+![Home](screenshots/home(1).png) ![Home](screenshots/home(2).png)  
 
 #### Profile  
 ![Profile](screenshots/profile.png)  
