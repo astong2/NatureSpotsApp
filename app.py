@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'  # Replace with a strong random key
+app.secret_key = os.environ.get("SECRET_KEY", "dev-change-me")
 
 from flask_sqlalchemy import SQLAlchemy
 import os
@@ -325,6 +325,9 @@ def forbidden(e):
 
 
 
+# Create tables if they don't exist (safe to run every start)
+with app.app_context():
+    db.create_all()
 
 
 
