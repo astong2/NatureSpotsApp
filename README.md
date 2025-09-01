@@ -40,7 +40,7 @@ Discover and save peaceful nature spots near you.
 ![Add Spot](screenshots/addspot.png) ![Edit Spot](screenshots/editspot.png)  
 
 #### Inspiration  
-![Inspiration](screenshots/inspiration1.png) ![Inspiration](screenshots/inspiration2.png)  
+![Inspiration](screenshots/inspiration(1).png) ![Inspiration](screenshots/inspiration(2).png)  
 
 ---
 
