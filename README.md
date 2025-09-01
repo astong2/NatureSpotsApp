@@ -1,56 +1,93 @@
-# 🌿 NatureSpots
+# 🌱 NatureSpots  
 
 Discover and save peaceful nature spots near you.  
-A full-stack Flask app with user accounts, CRUD features, and a focus on simplicity.
+👉 [Live Demo](https://naturespots.onrender.com)  
+
+---
 
 ## ✨ Features
-- User authentication: register, login, logout (hashed passwords)
-- CRUD for Nature Spots (title, description, location, tags, image URL)
-- Save/Unsave favourite spots
-- Profile page: view your spots + saved spots
-- Spot detail pages
-- Search by keyword + filter by tag
-- Inspiration page (quotes + images)
-- Styled UI: navbar, flash messages, responsive cards
-- SQLite database with SQLAlchemy persistence
+- ✅ User authentication: register, login, logout (hashed passwords)  
+- ✅ Add, edit, delete, and view Nature Spots (title, description, location, tags, image URL)  
+- ✅ Save / Unsave favourite spots  
+- ✅ Profile page (your spots + saved spots)  
+- ✅ Inspiration page (quotes + images)  
+- ✅ Search by keyword + filter by tag  
+- ✅ Responsive UI with styled navbar, flash messages, and cards  
+- ✅ SQLite database with SQLAlchemy ORM  
+
+---
 
 ## 🛠 Tech Stack
-- Python 3, Flask, Jinja2
-- Flask-SQLAlchemy (SQLite)
-- Werkzeug security (password hashing)
-- HTML + CSS
+- Python 3, Flask, Jinja2  
+- Flask-SQLAlchemy (SQLite)  
+- Werkzeug security (password hashing)  
+- HTML + CSS  
 
-## 📸 Screenshots
+---
 
-### Login
-![Login](screenshots/Login.png)
+## 🖼️ Screenshots  
 
-### Home
-![Home](screenshots/home(1).png)
-![Home](screenshots/home(2).png)
+#### Login & Register  
+![Login](screenshots/Login.png) ![Register](screenshots/register.png)  
 
-### Profile
-![Profile](screenshots/profile.png)
+#### Home  
+![Home](screenshots/home1.png) ![Home](screenshots/home2.png)  
 
-### Spot Details
-![Add spot](screenshots/addspot.png)
-![Edit spot](screenshots/editspot.png)
+#### Profile  
+![Profile](screenshots/profile.png)  
 
-### Inspiration
-![Inspiration](screenshots/inspiration(1).png)
-![Inspiration](screenshots/inspiration(2).png)
-            
+#### Add / Edit Spot  
+![Add Spot](screenshots/addspot.png) ![Edit Spot](screenshots/editspot.png)  
 
-## 🚀 Setup
-```bash
-git clone https://github.com/<your-username>/NatureSpotsApp.git
-cd NatureSpotsApp
-python -m venv venv
-.\venv\Scripts\activate
-pip install -r requirements.txt
-python
->>> from app import app, db
->>> with app.app_context():
-...     db.create_all()
->>> exit()
-python app.py
+#### Inspiration  
+![Inspiration](screenshots/inspiration1.png) ![Inspiration](screenshots/inspiration2.png)  
+
+---
+
+## 🚀 Setup (Run Locally)
+
+Follow these steps to run NatureSpots on your local machine:  
+
+1. Clone the repo  
+   git clone https://github.com/astong2/NatureSpotsApp.git  
+   cd NatureSpotsApp  
+
+2. Create & activate a virtual environment  
+   python -m venv venv  
+   .\venv\Scripts\activate   # Windows  
+   source venv/bin/activate # Mac/Linux  
+
+3. Install dependencies  
+   pip install -r requirements.txt  
+
+4. Run database migrations (first time only)  
+   python  
+   >>> from app import app, db  
+   >>> with app.app_context():  
+   ...     db.create_all()  
+   >>> exit()  
+
+5. Start the app  
+   python app.py  
+
+---
+
+## 🌍 Deployment
+
+This project is deployed live on **Render**.  
+👉 [Live Demo](https://naturespots.onrender.com)  
+
+To deploy your own version:  
+1. Push code to GitHub  
+2. Connect repo to [Render](https://render.com)  
+3. Add environment variable:  
+   - SECRET_KEY=your-secret-key  
+4. Set **Start Command** in Render:  
+   gunicorn app:app --bind 0.0.0.0:$PORT  
+
+---
+
+## 👤 Author  
+
+Built by **Aston Grant**  
+- GitHub: [astong2](https://github.com/astong2)  
