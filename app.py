@@ -1,12 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
+import os
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-change-me")
 
 from flask_sqlalchemy import SQLAlchemy
-import os
 
 # Database setup
 basedir = os.path.abspath(os.path.dirname(__file__))
