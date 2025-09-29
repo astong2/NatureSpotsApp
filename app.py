@@ -54,7 +54,7 @@ class NatureSpot(db.Model):
     location = db.Column(db.String(200), nullable=False)
     tags = db.Column(db.Text, default="")
     image_url = db.Column(db.Text, default="")
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     creator = db.relationship('User', backref='spots')
