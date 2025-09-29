@@ -10,6 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 from flask import abort
 from flask import request
+from sqlalchemy import text 
 
 # ----------------------------
 # App and Configuration
@@ -50,9 +51,9 @@ class NatureSpot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    location = db.Column(db.String(100), nullable=False)
-    tags = db.Column(db.String(100))
-    image_url = db.Column(db.String(300))
+    location = db.Column(db.String(200), nullable=False)
+    tags = db.Column(db.text)
+    image_url = db.Column(db.text)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 class SavedSpot(db.Model):
@@ -60,6 +61,31 @@ class SavedSpot(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     spot_id = db.Column(db.Integer, db.ForeignKey('nature_spot.id'), nullable=False)
     __table_args__ = (db.UniqueConstraint('user_id', 'spot_id', name='uq_user_spot'),)
+
+
+def _run_migration():
+    stmts = [
+        # make long-text friendly
+        "ALTER TABLE nature_spot ALTER COLUMN description TYPE text",
+        "ALTER TABLE nature_spot ALTER COLUMN tags        TYPE text",
+        "ALTER TABLE nature_spot ALTER COLUMN image_url   TYPE text",
+        "ALTER TABLE nature_spot ALTER COLUMN location    TYPE varchar(200)"
+    ]
+    for s in stmts:
+        try:
+            db.session.execute(text(s))
+            db.session.commit()
+        except Exception as e:
+            # ignore harmless 'already type text' / similar
+            db.session.rollback()
+
+@app.route("/_migrate")
+def migrate():
+    token = request.args.get("token", "")
+    if not token or token != os.environ.get("MIGRATION_TOKEN", ""):
+        return "Forbidden", 403
+    _run_migration()
+    return "Migration complete", 200
 
 
 # ----------------------------
