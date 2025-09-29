@@ -1,20 +1,46 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
-from werkzeug.security import generate_password_hash, check_password_hash
+# ----------------------------
+# Imports
+# ----------------------------
 
 import os
+from datetime import datetime
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_
+from flask import abort
+from flask import request
+
+# ----------------------------
+# App and Configuration
+# ----------------------------
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-change-me")
 
-from flask_sqlalchemy import SQLAlchemy
+# ----------------------------
+# Database setup (SQLite local, Postgres on Render)
+# ----------------------------
+db_url = os.environ.get("DATABASE_URL")
+if db_url:
+    # Render sometimes gives postgres:// — SQLAlchemy expects postgresql+psycopg2://
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql+psycopg2://", 1)
+    app.config["SQLALCHEMY_DATABASE_URI"] = db_url
+else:
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(basedir, 'nature_spots.db')}"
 
-# Database setup
-basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'nature_spots.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-# User table
+with app.app_context():
+    db.create_all()
+
+# ----------------------------
+# Models
+# ----------------------------
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
@@ -22,7 +48,6 @@ class User(db.Model):
     password = db.Column(db.String(200), nullable=False)
     spots = db.relationship('NatureSpot', backref='creator', lazy=True)
 
-# NatureSpot table
 class NatureSpot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
@@ -39,39 +64,11 @@ class SavedSpot(db.Model):
     __table_args__ = (db.UniqueConstraint('user_id', 'spot_id', name='uq_user_spot'),)
 
 
+# ----------------------------
+# Routes
+# ----------------------------
 
-from werkzeug.security import generate_password_hash
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        email = request.form['email']
-        password = request.form['password']
-
-        # Check if username or email already exists
-        existing_user = User.query.filter(
-            (User.username == username) | (User.email == email)
-        ).first()
-        if existing_user:
-            flash('Username or email already exists.', 'error')
-            return redirect(url_for('register'))
-
-        # Hash password and save to DB
-        hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
-        new_user = User(username=username, email=email, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
-
-        flash('Registration successful! Please log in.', 'Success')
-        return redirect(url_for('login'))
-
-    return render_template('register.html')
-
-
-
-from sqlalchemy import or_
-
+# Home route
 @app.route('/')
 def home():
     q = request.args.get('q', '').strip()
@@ -116,11 +113,74 @@ def home():
                            saved_ids=saved_ids,
                            q=q, tag=tag, all_tags=all_tags)
 
+# Register route
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
 
+        # Check if username or email already exists
+        existing_user = User.query.filter(
+            (User.username == username) | (User.email == email)
+        ).first()
+        if existing_user:
+            flash('Username or email already exists.', 'error')
+            return redirect(url_for('register'))
 
+        # Hash password and save to DB
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
+        new_user = User(username=username, email=email, password=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
 
+        flash('Registration successful! Please log in.', 'Success')
+        return redirect(url_for('login'))
 
+    return render_template('register.html')
 
+# Login route
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        user = User.query.filter_by(username=username).first()
+        if user and check_password_hash(user.password, password):
+            session['user_id'] = user.id
+            session['username'] = user.username
+            flash('Logged in successfully!', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash('Invalid username or password.', 'error')
+            return redirect(url_for('login'))
+
+    return render_template('login.html')
+
+# Profile routes
+@app.route('/profile')
+def my_profile():
+    if 'user_id' not in session:
+        flash('Please log in to view your profile.', 'warning')
+        return redirect(url_for('login'))
+    return redirect(url_for('profile', username=session['username']))
+
+@app.route('/profile/<username>')
+def profile(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    user_spots = user.spots
+    saved_spots = (
+        db.session.query(NatureSpot)
+        .join(SavedSpot, SavedSpot.spot_id == NatureSpot.id)
+        .filter(SavedSpot.user_id == user.id)
+        .order_by(NatureSpot.id.desc())
+        .all()
+    )
+    return render_template('profile.html', user=user, user_spots=user_spots, saved_spots=saved_spots)
+
+# New spots route
 @app.route('/spots/new', methods=['GET', 'POST'])
 def add_spot():
     if 'user_id' not in session:
@@ -149,8 +209,7 @@ def add_spot():
 
     return render_template('add_spot.html')
 
-
-
+# Inspiration route
 @app.route('/inspiration')
 def inspiration():
     quotes = [
@@ -175,67 +234,14 @@ def inspiration():
     ]
     return render_template('inspiration.html', quotes=quotes, images=images)
 
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-
-        user = User.query.filter_by(username=username).first()
-        if user and check_password_hash(user.password, password):
-            session['user_id'] = user.id
-            session['username'] = user.username
-            flash('Logged in successfully!', 'success')
-            return redirect(url_for('home'))
-        else:
-            flash('Invalid username or password.', 'error')
-            return redirect(url_for('login'))
-
-    return render_template('login.html')
-
-
-
+# Logout route
 @app.route('/logout')
 def logout():
     session.clear()
     flash('You have been logged out.', 'info')
     return redirect(url_for('login'))
 
-
-from flask import abort
-
-@app.route('/profile')
-def my_profile():
-    if 'user_id' not in session:
-        flash('Please log in to view your profile.', 'warning')
-        return redirect(url_for('login'))
-    return redirect(url_for('profile', username=session['username']))
-
-@app.route('/profile/<username>')
-def profile(username):
-    user = User.query.filter_by(username=username).first_or_404()
-    user_spots = user.spots
-    saved_spots = (
-        db.session.query(NatureSpot)
-        .join(SavedSpot, SavedSpot.spot_id == NatureSpot.id)
-        .filter(SavedSpot.user_id == user.id)
-        .order_by(NatureSpot.id.desc())
-        .all()
-    )
-    return render_template('profile.html', user=user, user_spots=user_spots, saved_spots=saved_spots)
-
-
-
-from flask import abort
-
-def get_spot_or_404(spot_id):
-    spot = NatureSpot.query.get(spot_id)
-    if not spot:
-        abort(404)
-    return spot
-
+# Edit and Delete routes
 @app.route('/spots/<int:spot_id>/edit', methods=['GET', 'POST'])
 def edit_spot(spot_id):
     if 'user_id' not in session:
@@ -274,9 +280,6 @@ def delete_spot(spot_id):   # <-- endpoint name MUST be delete_spot
     flash('Spot deleted.', 'success')
     return redirect(url_for('profile', username=session['username']))
 
-
-from flask import request
-
 @app.route('/spots/<int:spot_id>/save', methods=['POST'])
 def toggle_save(spot_id):
     if 'user_id' not in session:
@@ -284,11 +287,9 @@ def toggle_save(spot_id):
         return redirect(url_for('login'))
 
     spot = NatureSpot.query.get_or_404(spot_id)
-
     existing = SavedSpot.query.filter_by(
         user_id=session['user_id'], spot_id=spot.id
     ).first()
-
     if existing:
         db.session.delete(existing)
         db.session.commit()
@@ -313,6 +314,9 @@ def spot_detail(spot_id):
 
     return render_template('spot_detail.html', spot=spot, is_saved=is_saved)
 
+# ----------------------------
+# Error Handlers
+# ----------------------------
 @app.errorhandler(404)
 def not_found(e):
     return render_template('404.html'), 404
@@ -320,6 +324,12 @@ def not_found(e):
 @app.errorhandler(403)
 def forbidden(e):
     return render_template('403.html'), 403
+
+def get_spot_or_404(spot_id):
+    spot = NatureSpot.query.get(spot_id)
+    if not spot:
+        abort(404)
+    return spot
 
 
 
