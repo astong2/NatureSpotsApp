@@ -69,9 +69,6 @@ class NatureSpot(db.Model):
     image_url = db.Column(db.Text, nullable=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-
-    updated_at = db.Column(
-        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     # MATCHES User.spots above
     creator = db.relationship("User", back_populates="spots")
 
