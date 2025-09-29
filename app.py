@@ -20,16 +20,14 @@ app.secret_key = os.environ.get("SECRET_KEY", "dev-change-me")
 # ----------------------------
 # Database setup (SQLite local, Postgres on Render)
 # ----------------------------
-db_url = os.environ.get("DATABASE_URL")
-if db_url:
-    # Render sometimes gives postgres:// — SQLAlchemy expects postgresql+psycopg2://
-    if db_url.startswith("postgres://"):
-        db_url = db_url.replace("postgres://", "postgresql+psycopg2://", 1)
-    app.config["SQLALCHEMY_DATABASE_URI"] = db_url
-else:
-    basedir = os.path.abspath(os.path.dirname(__file__))
-    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(basedir, 'nature_spots.db')}"
-
+uri = os.environ.get("DATABASE_URL")
+# Render sometimes gives postgres:// — SQLAlchemy expects postgresql+psycopg2://
+if uri and uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql+psycopg2://", 1)
+basedir = os.path.abspath(os.path.dirname(__file__))
+sqlite_path = "sqlite:///" + os.path.join(basedir, "nature_spots.db")
+# Fallback to local sqlite if no DATABASE_URL
+app.config["SQLALCHEMY_DATABASE_URI"] = uri or sqlite_path
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
