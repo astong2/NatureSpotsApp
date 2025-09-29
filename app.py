@@ -45,7 +45,7 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
+    password = db.Column(db.String(255), nullable=False)
 # ONE user -> MANY NatureSpot
     spots = db.relationship(
         "NatureSpot",
@@ -56,7 +56,7 @@ class User(db.Model):
     saved = db.relationship("SavedSpot", backref="user", cascade="all, delete-orphan")
 
     def check_password(self, raw: str) -> bool:
-        return check_password_hash(self.password_hash, raw)
+        return check_password_hash(self.password, raw)
 
 class NatureSpot(db.Model):
     __tablename__ = "nature_spot"
@@ -77,31 +77,6 @@ class SavedSpot(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     spot_id = db.Column(db.Integer, db.ForeignKey('nature_spot.id'), nullable=False)
     __table_args__ = (db.UniqueConstraint('user_id', 'spot_id', name='uq_user_spot'),)
-
-
-def _run_migration():
-    stmts = [
-        # make long-text friendly
-        "ALTER TABLE nature_spot ALTER COLUMN description TYPE text",
-        "ALTER TABLE nature_spot ALTER COLUMN tags        TYPE text",
-        "ALTER TABLE nature_spot ALTER COLUMN image_url   TYPE text",
-        "ALTER TABLE nature_spot ALTER COLUMN location    TYPE varchar(200)"
-    ]
-    for s in stmts:
-        try:
-            db.session.execute(text(s))
-            db.session.commit()
-        except Exception as e:
-            # ignore harmless 'already type text' / similar
-            db.session.rollback()
-
-@app.route("/_migrate")
-def migrate():
-    token = request.args.get("token", "")
-    if not token or token != os.environ.get("MIGRATION_TOKEN", ""):
-        return "Forbidden", 403
-    _run_migration()
-    return "Migration complete", 200
 
 
 # ----------------------------
@@ -188,6 +163,7 @@ def login():
         password = request.form['password']
 
         user = User.query.filter_by(username=username).first()
+
         if user and check_password_hash(user.password, password):
             session['user_id'] = user.id
             session['username'] = user.username
