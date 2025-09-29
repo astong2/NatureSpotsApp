@@ -41,23 +41,40 @@ with app.app_context():
 # ----------------------------
 
 class User(db.Model):
+    __tablename__ = "user"
+
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)
-    spots = db.relationship('NatureSpot', backref='creator', lazy=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+# ONE user -> MANY NatureSpot
+    spots = db.relationship(
+        "NatureSpot",
+        back_populates="creator",
+        cascade="all, delete-orphan",
+        lazy="dynamic",)
+# if you have SavedSpot:
+    saved = db.relationship("SavedSpot", backref="user", cascade="all, delete-orphan")
+
+    def check_password(self, raw: str) -> bool:
+        return check_password_hash(self.password_hash, raw)
 
 class NatureSpot(db.Model):
+    __tablename__ = "nature_spot"
+
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    location = db.Column(db.String(200), nullable=False)
-    tags = db.Column(db.Text, default="")
-    image_url = db.Column(db.Text, default="")
-    created_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    location = db.Column(db.String(120), nullable=False)
+    tags = db.Column(db.Text, nullable=True)
+    image_url = db.Column(db.Text, nullable=True)
 
-    creator = db.relationship('User', backref='spots')
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    # MATCHES User.spots above
+    creator = db.relationship("User", back_populates="spots")
 
 class SavedSpot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
