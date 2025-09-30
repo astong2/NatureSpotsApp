@@ -14,6 +14,7 @@ Discover and save peaceful nature spots near you.
 - ✅ Search by keyword + filter by tag  
 - ✅ Responsive UI with styled navbar, flash messages, and cards  
 - ✅ SQLite database with SQLAlchemy ORM  
+- ✅ Postgres database
 
 ---
 
@@ -22,25 +23,32 @@ Discover and save peaceful nature spots near you.
 - Flask-SQLAlchemy (SQLite)  
 - Werkzeug security (password hashing)  
 - HTML + CSS  
+- Postgres
 
 ---
 
 ## 🖼️ Screenshots  
 
 #### Login & Register  
-![Login](screenshots/Login.png) ![Register](screenshots/register.png)  
+![Login](screenshots/login1.png)
+![Login](screenshots/login2.png)
+![Register](screenshots/register.png)  
 
 #### Home  
-![Home](screenshots/home(1).png) ![Home](screenshots/home(2).png)  
+![Home](screenshots/home.png)
 
 #### Profile  
-![Profile](screenshots/profile.png)  
+![Profile](screenshots/profile1.png)  
+![Profile](screenshots/profile2.png)
 
 #### Add / Edit Spot  
-![Add Spot](screenshots/addspot.png) ![Edit Spot](screenshots/editspot.png)  
+![Add Spot](screenshots/add-spot.png) ![Edit Spot](screenshots/edit-spot.png)  
 
 #### Inspiration  
-![Inspiration](screenshots/inspiration(1).png) ![Inspiration](screenshots/inspiration(2).png)  
+![Inspiration](screenshots/inspiration1.png) ![Inspiration](screenshots/inspiration2.png)  
+
+#### Logout
+![Logout](screenshots/Logout.png)
 
 ---
 

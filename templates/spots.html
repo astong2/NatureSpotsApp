@@ -11,7 +11,7 @@
       <option value="{{ t }}" {% if tag == t %}selected{% endif %}>{{ t }}</option>
     {% endfor %}
   </select>
-  <button type="submit" class="btn btn-edit">Search</button>
+  <button type="submit">Search</button>
 
   {% if q or tag %}
     <a href="{{ url_for('home') }}" class="btn btn-secondary">Clear</a>
